@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gestión de Productos - FRALUSE</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+  <style>
+    body {
+      background-color: #f5f5dc; /* Fondo crema */
+    }
+
+    .container {
+      background-color: #fff;
+      padding: 40px;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .table-container {
+      margin-top: 20px;
+    }
+
+    .btn-primary {
+      width: auto;
+    }
+
+    .btn-danger {
+      width: auto;
+    }
+
+    .modal-content {
+      border-radius: 8px;
+    }
+
+    .modal-footer {
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .alert {
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <div class="mt-3 mb-3">
+    <h3>Gestión de Productos - FRALUSE</h3>
+    <a class="btn btn-primary" th:href="@{/producto/nuevo}">Nuevo Producto</a>
+    <a class="btn btn-secondary" th:href="@{/usuario/registrar}">Registrar Usuario</a>
+    <a class="btn btn-danger" href="/logout">Cerrar sesión</a>
+  </div>
+
+  <div class="table-container">
+    <table class="table table-striped">
+      <thead>
+      <tr>
+        <th>ID</th>
+        <th>Nombre</th>
+        <th>Descripción</th>
+        <th>Precio</th>
+        <th>Stock</th>
+        <th colspan="3">Acciones</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr th:each="producto : ${productos}">
+        <td th:text="${producto.id}"></td>
+        <td th:text="${producto.nombre}"></td>
+        <td th:text="${producto.descripcion}"></td>
+        <td th:text="${producto.precio}"></td>
+        <td th:text="${producto.stock}"></td>
+        <td>
+          <a class="btn btn-success" th:href="@{/producto/detalle/{id}(id=${producto.id})}">Detalle</a>
+        </td>
+        <td>
+          <a class="btn btn-warning" th:href="@{/producto/editar/{id}(id=${producto.id})}">Editar</a>
+        </td>
+        <td>
+          <a class="btn btn-danger" href="#"
+             th:attr="data-id=${producto.id}, data-name=${producto.nombre}"
+             data-bs-toggle="modal" data-bs-target="#confirmRemove">Eliminar</a>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Modal de confirmación -->
+  <div class="modal fade" id="confirmRemove" tabindex="-1" aria-labelledby="confirmRemoveLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="confirmRemoveLabel">Confirmación</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          ¿Estás seguro de que deseas eliminar <strong id="productoNameConfirm"></strong>?
+        </div>
+        <div class="modal-footer">
+          <form id="deleteForm" method="post">
+            <button type="submit" class="btn btn-danger">Eliminar</button>
+          </form>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+          crossorigin="anonymous"></script>
+  <script>
+    document.getElementById('confirmRemove').addEventListener('show.bs.modal', function (event) {
+      const button = event.relatedTarget;
+      const dataId = button.getAttribute('data-id');
+      const dataName = button.getAttribute('data-name');
+
+      const productoNameConfirm = document.getElementById('productoNameConfirm');
+      productoNameConfirm.textContent = dataName;
+
+      const deleteForm = document.getElementById('deleteForm');
+      deleteForm.action = `/producto/eliminar/${dataId}`;
+    });
+  </script>
+
+</div>
+</body>
+</html>
